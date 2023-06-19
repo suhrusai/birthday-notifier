@@ -7,7 +7,9 @@
         <v-container-fluid>
         <v-form>
             <v-text-field label="Server Name" v-model="server.name"></v-text-field>
-            <v-text-field label="Webhook URL" v-model="server.webhookUrl"></v-text-field>
+            <v-text-field label="Server Id" v-model="server.serverId"></v-text-field>
+            <v-text-field label="Channel Name" v-model="server.channelName"></v-text-field>
+            <v-text-field label="Channel Id" v-model="server.channelId"></v-text-field>
             <v-btn 
             color="primary" 
             :loading="isSending"
@@ -25,7 +27,7 @@ import Server from '@/models/Server';
 let serverService: ServerService = new ServerService();
     export default {
         data: () => ({
-            server: new Server("","",""),
+            server: new Server("","","","",""),
             isSending : false,
         }),
         methods: {

@@ -17,7 +17,7 @@
           <Birthdays></Birthdays>
         </v-window-item>
         <v-window-item value="three">
-          <HelloWorld></HelloWorld>
+          <AddBirthdayForm></AddBirthdayForm>
         </v-window-item>
   </v-window>
 </div>
@@ -26,10 +26,11 @@
 </template>
 
 <script lang="ts">
-  import HelloWorld from '@/components/HelloWorld.vue'
+  // import HelloWorld from '@/components/HelloWorld.vue'
   import Servers from '@/views/Servers.vue'
   import CustomImage from '@/components/CustomImage.vue'
   import Birthdays from '@/views/Birthdays.vue'
+  import AddBirthdayForm from '@/components/Birthday/AddBirthdayFrom.vue'
   export default{
     data(){
       return {
@@ -37,7 +38,7 @@
       }
     },
     components: {
-      HelloWorld,
+      AddBirthdayForm,
       Servers,
       CustomImage,
       Birthdays

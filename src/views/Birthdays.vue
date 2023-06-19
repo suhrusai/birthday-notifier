@@ -5,15 +5,29 @@
         width="320"
         class="pa-3 ma-2"
          v-for="birthday in birthdays" :key="birthday.id" >
-            <CustomImage :src="birthday.imageUrl" height="300px"></CustomImage>
+            <CustomImage :src="birthday.imageUrl" height="300px" @imageClicked="imageClicked(birthday.imageUrl)"></CustomImage>
             <v-card-title>
                 {{ birthday.name }}
             </v-card-title>
             <v-card-title>
-                {{ toIndianString(birthday.date?.toDate()) }}
+                {{ birthday.date }}
             </v-card-title>
         </v-card>
     </div>
+    <v-dialog v-model="imageDialog.show" width="auto">
+        <v-card>
+            <v-card-text v-show="!imageDialog.imageLoading" >
+                <img :src="imageDialog.imageUrl" class="dialog-image-preview" @load="imageDialog.imageLoading=false"/>
+            </v-card-text>
+            <v-card-text v-if="imageDialog.imageLoading">
+                <v-progress-circular
+                indeterminate
+                color="yellow-darken-2"
+                class="text-center align-middle"
+                ></v-progress-circular>
+            </v-card-text>
+        </v-card>
+    </v-dialog>
 </template>
 <script lang="ts">
     import CustomImage from '@/components/CustomImage.vue';
@@ -22,23 +36,48 @@
     const birthdayService = new BirthdayService();
     export default {
         data: () => ({
-            birthdays: new Array<Birthday>()
+            birthdays: new Array<Birthday>(),
+            imageDialog: {
+                height: '100px',
+                width: '100px',
+                imageLoading : true,
+                imageUrl: '',
+                show: false
+            }
         }),
         components: {
             CustomImage
         },
         async beforeMount() {
-            let birthdaysSnapshot = await birthdayService.getBirthdays()
-            birthdaysSnapshot.forEach((document : any) => {
-                const birthday: Birthday = document.data();
-                this.birthdays.push(birthday)
-                console.log(birthday)
-            });
+            this.birthdays = await birthdayService.getBirthdays();
         },
         methods: {
+            resetDialog() {
+                this.imageDialog = {
+                    height: '100px',
+                    width: '100px',
+                    imageLoading : true,
+                    imageUrl: '',
+                    show: false
+                }
+            },
+            imageClicked(imageUrl: string) {
+                this.imageDialog.imageUrl = imageUrl;
+                this.imageDialog.show = true;
+            },
+            imageLoadedInDialog(){
+                this.imageDialog.imageLoading = false;
+
+            },
             toIndianString(date: Date|null|undefined) {
                 return date?.toLocaleString('en-In')
             }
         }
     }
 </script>
+<style scoped>
+    .dialog-image-preview{
+        object-fit: scale-down;
+        height: 80vh;
+    }
+</style>

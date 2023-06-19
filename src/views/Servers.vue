@@ -1,5 +1,4 @@
 <template>
-
     <v-container>
         <div class="">
             <div class="d-flex justify-end">
@@ -52,7 +51,7 @@ import { QuerySnapshot } from '@firebase/firestore';
     export default {
         data: () => ({
             servers: servers,
-            serverToModify: new Server("","",""),
+            serverToModify: new Server("","","","",""),
             addServerDialog: false,
             modifyServerDialog: false,
             fetchingServers: false
@@ -69,12 +68,7 @@ import { QuerySnapshot } from '@firebase/firestore';
                 this.fetchingServers = true;
                 this.servers = [];
                 let serverService: ServerService = new ServerService();
-                let resSnapshot:QuerySnapshot = await serverService.readServers()
-                resSnapshot.forEach((document : any) => {
-                    const server: Server = document.data();
-                    console.log(server)
-                    this.servers.push(server)
-                });
+                this.servers = await serverService.readServers();
                 this.fetchingServers = false;
             },
             addServerDialogSubmitted() {
