@@ -1,6 +1,6 @@
 import  FirebaseServicesProvider  from './FirebaseServicesProvider';
 import Birthday from '../models/Birthday';
-import { getDocs,collection, addDoc,updateDoc,where,query, QuerySnapshot, DocumentData } from 'firebase/firestore';
+import { getDocs,collection, addDoc,updateDoc,doc,where,query, QuerySnapshot, DocumentData } from 'firebase/firestore';
 import { uuidv4 } from '@/customUtilities';
 const BIRTHDAY_COLLECTION_NAME:string ="birthdays";
 class BirthdayService{
@@ -23,7 +23,14 @@ class BirthdayService{
         return this.db.collection("birthdays").doc(birthdayId).delete();
     }
     updateBirthday(birthday:Birthday){
-
+        const docRef = doc(this.db, BIRTHDAY_COLLECTION_NAME,birthday.id);
+        return updateDoc(docRef, {
+            name : birthday.name,
+            date : birthday.date,
+            servers : birthday.servers,
+            imageUrl : birthday.imageUrl,
+            images: birthday.images
+        });
     }
     filterBirthdayByServer(serverId:string){
         return this.db.collection("birthdays").where("servers", "array-contains", serverId).get();

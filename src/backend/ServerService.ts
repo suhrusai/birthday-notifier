@@ -21,7 +21,6 @@ class ServerService{
         await deleteDoc(doc(this.fireStore, SERVERS_COLLECTION_NAME, serverId));
     }
     async updateServer(server:Server){
-
         const docRef = doc(this.fireStore, SERVERS_COLLECTION_NAME,server.id)
         return updateDoc(docRef, {
             name : server.name,
