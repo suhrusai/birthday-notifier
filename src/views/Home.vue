@@ -23,7 +23,6 @@
 <script lang="ts">
   // import HelloWorld from '@/components/HelloWorld.vue'
   import Servers from '@/views/Servers.vue'
-  import CustomImage from '@/components/CustomImage.vue'
   import Birthdays from '@/views/Birthdays.vue'
   export default{
     data(){
@@ -33,7 +32,6 @@
     },
     components: {
       Servers,
-      CustomImage,
       Birthdays
     }
 

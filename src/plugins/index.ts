@@ -12,6 +12,7 @@ import router from '../router'
 
 // Types
 import type { App } from 'vue'
+import { HeicCache } from './heic2any'
 
 export function registerPlugins (app: App) {
   loadFonts()
@@ -19,4 +20,5 @@ export function registerPlugins (app: App) {
     .use(vuetify)
     .use(router)
     .use(pinia)
+  HeicCache.getInstance()
 }

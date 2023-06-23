@@ -5,24 +5,49 @@
             indeterminate
             color="yellow-darken-2"
             ></v-progress-linear>
+        </div>
+        <div v-if="attemptLoadImage">
+            <div class="image-background" :style="{ backgroundImage: `url(${imageUrl})`, height: `${height}` }" v-if="imageLoaded"></div>
+            <ImageTag :src="src" class="image" :style="{  height: `${height}` }" @imageLoaded="onImageLoad" v-show="imageLoaded"/>
         </div>  
-        <div class="image-background" :style="{ backgroundImage: `url(${src})`, height: `${height}` }" v-if="imageLoaded"></div>
-        <img :src="src" class="image" :style="{  height: `${height}` }" @load="onImageLoad" v-show="imageLoaded"/>
+        
     </div>
     
 </template>
 <script lang="ts">
+import {convertHeicToDataUrl} from '@/plugins/heic2any';
+import ImageTag from './ImageTag.vue';
     export default {
         props: ['src', 'height'],
         data(){
             return {
-                imageLoaded: false
+                imageLoaded: false,
+                imageUrl: '',
+                attemptLoadImage: false,
             }
+        },
+        async mounted() {
+            if(this.src == null || this.src == undefined || this.src == '')
+                    return '';
+                let copyOfLink = this.src as string;
+                copyOfLink.toLowerCase();
+                if(copyOfLink.toLocaleLowerCase().includes('.heic') == true){
+                    console.log('heic image detected.Converting to jpg');
+                    this.imageUrl = await convertHeicToDataUrl(this.src) as string
+                    this.attemptLoadImage = true;
+                    return;
+                }
+                this.imageUrl = this.src;
+                this.attemptLoadImage = true;
+                return;
+            },
+        components: {
+            ImageTag
         },
         methods: {
             onImageLoad() {
                 this.imageLoaded = true;
-                console.log('image loaded');
+                console.log('image loaded')
             },
             imageClicked() {
                 if(this.imageLoaded)

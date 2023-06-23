@@ -9,9 +9,14 @@ export class FileService{
         this.storage = storage;
     }
     async uploadFile(file:File, basePath: string): Promise<UploadTask>{
-        const storageRef = ref(this.storage, file.name);
+        console.log(file.name)
+        const storageRef = ref(this.storage,file.name);
         console.log(storageRef)
-        const uploadTask = uploadBytesResumable(storageRef, file);
+        const metaData = {
+            contentType: file.type,
+            cacheControl: 'public,max-age=36000000',
+        }
+        const uploadTask = uploadBytesResumable(storageRef, file,metaData);
         console.log(uploadTask)
         return uploadTask;
     }

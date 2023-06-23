@@ -5,10 +5,10 @@
         </v-card-title>
         <v-card-title>
             <v-row>
-                <v-col cols="12" md="6">
+                <v-col cols="12" md="6" xs="12">
                     <v-text-field label="Name" v-model="birthday.name"></v-text-field>
                     <v-text-field label="Date" v-model="birthday.date"></v-text-field>
-                    <!-- <v-text-field label="Image Url" v-model="birthday.imageUrl"></v-text-field> -->
+                    <!-- <v-xztext-field label="Image Url" v-model="birthday.imageUrl"></v-xztext-field> -->
                     <v-select
                         :items="birthday.images"
                         label="Image Url"
@@ -37,13 +37,19 @@
                         label="Chips"
                         multiple
                     ></v-select>
+                    <v-select
+                        v-model="birthday.gender"
+                        :items="['M','F']"
+                        chips
+                        label="Chips"
+                    ></v-select>
             </v-col>
-            <v-col cols="12" md="6">
-                <CustomImage :src="birthday.imageUrl" v-if="birthday.imageUrl.length!=0" height="100%"></CustomImage>
+            <v-col cols="12" md="6" xs="12">
+                <CustomImage :src="birthday.imageUrl" v-if="birthday.imageUrl" :key="birthday.imageUrl" height="100%"></CustomImage>
             </v-col>
             </v-row>
             <v-row>
-                <v-col offset="11">
+                <v-col offset-md="11" xs="12">
                     <v-btn color="primary" :loading="saveInProgress" @click="saveBirthday">
                         Save
                     </v-btn>
@@ -71,17 +77,21 @@
         }
     },
     data: () => ({
-        birthday: new Birthday("", "", "", new Array<string>(), "", new Array<string>()),
+        birthday: new Birthday("", "", "", new Array<string>(), "", new Array<string>(),""),
         servers: new Array<Server>(),
         fileSelected: Array<File>(),
         uploadInProgress: false,
         saveInProgress: false,
-        actionType: "Add"
+        actionType: "Add",
+        imageChaned : true
     }),
     async beforeMount() {
         if (this.birthdayInput) {
             this.birthday = clone(this.birthdayInput);
             this.actionType = "Edit";
+        }
+        if(!this.birthday.imageUrl){
+            this.birthday.imageUrl = "";
         }
         this.servers = await serverService.readServers();
     },
@@ -112,6 +122,11 @@
                 await birthdayService.addBirthday(this.birthday);
             this.saveInProgress = false;
             this.$emit('submit')
+        }
+    },
+    watch:{
+        'birthday.imageUrl' : function(){
+            console.log("image url changed");
         }
     },
     computed: {

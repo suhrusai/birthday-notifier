@@ -16,7 +16,8 @@ class BirthdayService{
             id: birthday.id,
             servers : birthday.servers,
             imageUrl : birthday.imageUrl,
-            images: birthday.images
+            images: birthday.images,
+            gender: birthday.gender
         });
     }
     deleteBirthday(birthdayId:string){

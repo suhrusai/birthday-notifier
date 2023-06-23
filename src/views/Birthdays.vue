@@ -1,13 +1,13 @@
 <template>
     <v-row>
-        <v-col cols="12" md="4">
+        <v-col cols="12" sm="12" md="4">
             <span>Sort</span>
             <v-select 
                 v-model="choosenSort"
                 :items="sortCriterions">
             </v-select>
         </v-col>
-        <v-col offset="5" md="3" class="d-flex">
+        <v-col offset="5" md="3" sm="12" class="d-flex">
             <div class="align-self-center">
                 <v-btn 
                     color = "transparent"
@@ -30,7 +30,10 @@
         width="320"
         class="pa-3 ma-2"
          v-for="birthday in birthdays" :key="birthday.id" >
-            <CustomImage :src="birthday.imageUrl" height="300px" @imageClicked="imageClicked(birthday.imageUrl)"></CustomImage>
+            <CustomImage :src="birthday.imageUrl" height="300px" @imageClicked="imageClicked(birthday.imageUrl)" v-if="birthday.imageUrl"></CustomImage>
+            <CustomImage 
+                src="https://media.istockphoto.com/id/1311461815/vector/illustration-vector-graphic-design-asset-of-cream-cake-suitable-for-multipurpose-content.jpg?s=612x612&w=0&k=20&c=JeNpdxUftEdYWWjPRiqUCWxYQs10Y8ulLy03RFNFdIE=" 
+                height="300px" v-if="!birthday.imageUrl"></CustomImage>
             <v-card-title class="pa-0">
                 {{ birthday.name }}
             </v-card-title>
@@ -56,7 +59,7 @@
     <v-dialog v-model="imageDialog.show" width="auto">
         <v-card>
             <v-card-text v-show="!imageDialog.imageLoading" >
-                <img :src="imageDialog.imageUrl" class="dialog-image-preview" @load="imageDialog.imageLoading=false"/>
+                <ImageTag :src="imageDialog.imageUrl" class="dialog-image-preview" @imageLoaded="imageDialog.imageLoading=false"/>
             </v-card-text>
             <v-card-text v-if="imageDialog.imageLoading">
                 <v-progress-circular
@@ -78,6 +81,7 @@
     import ServerService from '@/backend/ServerService';
     import Server from '@/models/Server';
     import AddBirthdayForm from '@/components/Birthday/AddBirthdayFrom.vue'
+    import ImageTag from '@/components/ImageTag.vue';
     const birthdayService = new BirthdayService();
     const serverService = new ServerService();
     export default {
@@ -86,7 +90,7 @@
             servers: new Array<Server>(),
             fetchingServers: false,
             showManageDialog: false,
-            birthdayToEdit: null,
+            birthdayToEdit: undefined,
             fetchingBirthdays: false,
             choosenSort: 'NearBday',
             sortCriterions: [
@@ -105,7 +109,8 @@
         }),
         components: {
             CustomImage,
-            AddBirthdayForm
+            AddBirthdayForm,
+            ImageTag
         },
         watch:{
             'choosenSort': {
@@ -116,6 +121,11 @@
         },
         async beforeMount() {
             await this.fetchBirthdays();
+        },
+        computed:{
+            placeholderImageUrl(){
+                return require('@/assets/');
+            }
         },
         methods: {
             async fetchBirthdays(){
