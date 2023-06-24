@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { getAuth } from "firebase/auth";
 interface firebaseConfig{
     apiKey: string;
     authDomain: string;
@@ -38,5 +39,10 @@ export default class FirebaseServicesProvider{
         // Initialize Cloud Storage and get a reference to the service
         const storage = getStorage(this.app);
         return storage;
+    }
+    getAuthInstance(){
+        // Initialize Cloud Storage and get a reference to the service
+        const auth = getAuth(this.app);
+        return auth;
     }
 }

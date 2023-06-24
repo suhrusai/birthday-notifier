@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@mdi/font": "7.0.96",
+    "build": "^0.1.4",
     "core-js": "^3.29.0",
     "firebase": "^9.22.2",
     "heic2any": "^0.0.4",

@@ -1,18 +1,23 @@
 <template>
-    <div class="main-container" :style="{  height: `${height}` }" @click="imageClicked()">
-        <div class="loading-container" :style="{  height: `${height}` }" v-if="!imageLoaded">
-            <v-progress-linear
-            indeterminate
-            color="yellow-darken-2"
-            ></v-progress-linear>
+    <v-lazy
+        :min-height="200"
+        :options="{'threshold':0.5}"
+        transition="fade-transition"
+    >
+        <div class="main-container" :style="{  height: `${height}` }" @click="imageClicked()">
+            <div class="loading-container" :style="{  height: `${height}` }" v-if="!imageLoaded">
+                <v-progress-linear
+                indeterminate
+                color="yellow-darken-2"
+                ></v-progress-linear>
+            </div>
+            <div v-if="attemptLoadImage">
+                <div class="image-background" :style="{ backgroundImage: `url(${imageUrl})`, height: `${height}` }" v-if="imageLoaded"></div>
+                <ImageTag :src="src" class="image" :style="{  height: `${height}` }" @imageLoaded="onImageLoad" v-show="imageLoaded"/>
+            </div>  
+            
         </div>
-        <div v-if="attemptLoadImage">
-            <div class="image-background" :style="{ backgroundImage: `url(${imageUrl})`, height: `${height}` }" v-if="imageLoaded"></div>
-            <ImageTag :src="src" class="image" :style="{  height: `${height}` }" @imageLoaded="onImageLoad" v-show="imageLoaded"/>
-        </div>  
-        
-    </div>
-    
+    </v-lazy>
 </template>
 <script lang="ts">
 import {convertHeicToDataUrl} from '@/plugins/heic2any';
@@ -53,6 +58,11 @@ import ImageTag from './ImageTag.vue';
                 if(this.imageLoaded)
                     this.$emit('imageClicked');
             }
+        },
+        unmounted() {
+            this.imageLoaded = false;
+            this.imageUrl = '';
+            this.attemptLoadImage = false;
         }
     }
 </script>

@@ -1,5 +1,6 @@
 <template>
-    <v-row>
+    <h2 class="mb-4 mx-5">Birthdays</h2>
+    <v-row class="mx-3">
         <v-col cols="12" sm="12" md="4">
             <span>Sort</span>
             <v-select 
@@ -23,7 +24,11 @@
             </div>
         </v-col>    
     </v-row>
-
+    <v-progress-linear
+        v-if="fetchingBirthdays"
+        indeterminate
+        color="yellow-darken-2"
+    ></v-progress-linear>
     <div class="d-flex flex-wrap justify-center">
         <v-card
         variant="tonal"
@@ -82,8 +87,10 @@
     import Server from '@/models/Server';
     import AddBirthdayForm from '@/components/Birthday/AddBirthdayFrom.vue'
     import ImageTag from '@/components/ImageTag.vue';
+    import { useAppStore } from '@/store/app';
     const birthdayService = new BirthdayService();
     const serverService = new ServerService();
+    const appStore = useAppStore();
     export default {
         data: () => ({
             birthdays: new Array<Birthday>(),

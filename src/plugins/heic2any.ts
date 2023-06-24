@@ -13,7 +13,7 @@ export async function convertHeicToDataUrl(src:any) {
         const heicBlob = await response.blob();
         const convertedBlob = await heic2any({
             blob: heicBlob,
-            toType: 'image/png', // Convert to JPEG data URL
+            toType: 'image/jpeg', // Convert to JPEG data URL
         });
         const convertedDataUrl = URL.createObjectURL(convertedBlob as Blob);
         heicCache.set(src, convertedDataUrl);
