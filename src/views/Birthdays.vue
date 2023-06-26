@@ -29,52 +29,17 @@
         indeterminate
         color="yellow-darken-2"
     ></v-progress-linear>
-    <div class="d-flex flex-wrap justify-center">
-        <v-card
-        variant="tonal"
-        width="320"
-        class="pa-3 ma-2"
-         v-for="birthday in birthdays" :key="birthday.id" >
-            <CustomImage :src="birthday.imageUrl" height="300px" @imageClicked="imageClicked(birthday.imageUrl)" v-if="birthday.imageUrl"></CustomImage>
-            <CustomImage 
-                src="https://media.istockphoto.com/id/1311461815/vector/illustration-vector-graphic-design-asset-of-cream-cake-suitable-for-multipurpose-content.jpg?s=612x612&w=0&k=20&c=JeNpdxUftEdYWWjPRiqUCWxYQs10Y8ulLy03RFNFdIE=" 
-                height="300px" v-if="!birthday.imageUrl"></CustomImage>
-            <v-card-title class="pa-0">
-                {{ birthday.name }}
-            </v-card-title>
-            <v-card-text class="pa-0">
-                <b>DOB:</b> {{ birthday.date }}
-            </v-card-text>
-            <v-card-text class="pa-0">
-                <b>Servers: </b>
-                <v-chip v-for="serverId in birthday.servers" class="mr-2" variant="elevated" size="small" :key="serverId">
-                    <v-progress-circular
-                        v-if="fetchingServers"
-                        indeterminate
-                        color="yellow-darken-2">
-                    </v-progress-circular>
-                    {{ getServerName(serverId) }}
-                </v-chip>
-            </v-card-text>
-            <v-btn color="primary" variant="text" @click="editBirthday(birthday)">
-                Edit
-            </v-btn>
-        </v-card>
+    <div class="d-flex flex-wrap justify-center"  v-if="fetchBirthdays">
+        <template  v-for="birthday in birthdays" :key="birthday.id">
+            <BirthdayCard :birthday="birthday">
+                <template v-slot:actions>
+                    <v-btn color="primary" variant="text" @click="editBirthday(birthday)">
+                    Edit
+                    </v-btn>
+                </template>
+            </BirthdayCard>
+        </template>
     </div>
-    <v-dialog v-model="imageDialog.show" width="auto">
-        <v-card>
-            <v-card-text v-show="!imageDialog.imageLoading" >
-                <ImageTag :src="imageDialog.imageUrl" class="dialog-image-preview" @imageLoaded="imageDialog.imageLoading=false"/>
-            </v-card-text>
-            <v-card-text v-if="imageDialog.imageLoading">
-                <v-progress-circular
-                indeterminate
-                color="yellow-darken-2"
-                class="text-center align-middle"
-                ></v-progress-circular>
-            </v-card-text>
-        </v-card>
-    </v-dialog>
     <v-dialog v-model="showManageDialog">
         <AddBirthdayForm :birthdayInput="birthdayToEdit" @submit="manageFormSubmitted()"></AddBirthdayForm>
     </v-dialog>
@@ -87,11 +52,21 @@
     import Server from '@/models/Server';
     import AddBirthdayForm from '@/components/Birthday/AddBirthdayFrom.vue'
     import ImageTag from '@/components/ImageTag.vue';
+    import BirthdayCard from '@/components/Birthday/BirthdayCard.vue';
     import { useAppStore } from '@/store/app';
+    import ImageDialog from '@/components/ImageDialog.vue';
+import { storeToRefs } from 'pinia';
+import { clone } from '@/customUtilities';
     const birthdayService = new BirthdayService();
     const serverService = new ServerService();
     const appStore = useAppStore();
+    const appStoreRefs = storeToRefs(appStore)
     export default {
+        setup(){
+            return {
+                appStore: appStore
+            }
+        },
         data: () => ({
             birthdays: new Array<Birthday>(),
             servers: new Array<Server>(),
@@ -106,18 +81,10 @@
                 { title: 'Ascending Date', value: 'ascDate' },
                 { title: 'Descending Date', value: 'descDate' },
             ],
-            imageDialog: {
-                height: '100px',
-                width: '100px',
-                imageLoading : true,
-                imageUrl: '',
-                show: false
-            }
         }),
         components: {
-            CustomImage,
             AddBirthdayForm,
-            ImageTag
+            BirthdayCard,
         },
         watch:{
             'choosenSort': {
@@ -127,6 +94,7 @@
             }
         },
         async beforeMount() {
+            appStore.$reset();
             await this.fetchBirthdays();
         },
         computed:{
@@ -136,18 +104,16 @@
         },
         methods: {
             async fetchBirthdays(){
+                appStore.$reset();
                 this.fetchingBirthdays = true;
                 this.birthdays = [];
-                this.birthdays = await birthdayService.getBirthdays();
+                this.birthdays = await birthdayService.getBirthdays() as Birthday[];
+                await appStore.fetchBirthdays();
+                this.birthdays = clone(appStore.birthdays);
                 this.applySort(this.choosenSort);
-                this.fetchServers();
+                await appStore.fetchServers();
+                this.servers = clone(appStore.servers);
                 this.fetchingBirthdays = false;
-            },
-            fetchServers: async function(){
-                this.fetchingServers = true;
-                this.servers = [];
-                this.servers = await serverService.readServers();
-                this.fetchingServers = false;
             },
             applySort(sortCriterion: string){
                 switch(sortCriterion){
@@ -205,27 +171,6 @@
             editBirthday(birthday:any) {
                 this.birthdayToEdit = birthday;
                 this.showManageDialog = true;
-
-            },
-            getServerName(serverId: string){
-                    const server = this.servers.find(server => server.id === serverId);
-                    return server?.name;
-            },
-            resetDialog() {
-                this.imageDialog = {
-                    height: '100px',
-                    width: '100px',
-                    imageLoading : true,
-                    imageUrl: '',
-                    show: false
-                }
-            },
-            imageClicked(imageUrl: string) {
-                this.imageDialog.imageUrl = imageUrl;
-                this.imageDialog.show = true;
-            },
-            imageLoadedInDialog(){
-                this.imageDialog.imageLoading = false;
 
             },
             toIndianString(date: Date|null|undefined) {
