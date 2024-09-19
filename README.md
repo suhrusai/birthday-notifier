@@ -1,57 +1,70 @@
-# essentials
 
-## Project setup
+# Birthday Notifier
 
-```
-# yarn
-yarn
+A web-based birthday notification system using Vue.js and Firebase. This project enables users to add servers and birthdays and send birthday notifications to Discord channels.
 
-# npm
-npm install
+## Features
 
-# pnpm
-pnpm install
-```
+- **Server management**: Add and modify servers that will receive birthday notifications.
+- **Birthday management**: Add and view birthdays, including monthly overviews.
+- **Discord notifications**: Automatically sends birthday notifications to designated Discord channels.
+- **Vuetify Integration**: Beautiful UI powered by Vuetify components.
+- **Firebase Hosting**: Deployed using Firebase Hosting with GitHub Actions for CI/CD.
 
-### Compiles and hot-reloads for development
+## Project Setup
 
-```
-# yarn
-yarn dev
+### Prerequisites
 
-# npm
+- Node.js
+- Firebase CLI
+- A Discord server with webhook access
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/suhrusai/birthday-notifier.git
+   cd birthday-notifier
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Configure Firebase:
+   Ensure that Firebase is set up in your project. Update `.firebaserc` and `firebase.json` to match your Firebase project settings.
+
+4. Set up Discord Webhooks:
+   Add the webhook URLs for the servers where birthday notifications will be sent.
+
+### Compiles and Hot-Reloads for Development
+
+```bash
 npm run dev
-
-# pnpm
-pnpm dev
 ```
 
-### Compiles and minifies for production
+### Build for Production
 
-```
-# yarn
-yarn build
-
-# npm
+```bash
 npm run build
-
-# pnpm
-pnpm build
 ```
 
-### Lints and fixes files
+### Deploy to Firebase
 
-```
-# yarn
-yarn lint
+Ensure Firebase CLI is installed and authenticated:
 
-# npm
-npm run lint
-
-# pnpm
-pnpm lint
+```bash
+firebase deploy
 ```
 
-### Customize configuration
+## GitHub Actions CI/CD
 
-See [Configuration Reference](https://vitejs.dev/config/).
+This project uses GitHub Actions for Firebase hosting. You can find the workflow configuration under `.github/workflows`.
+
+- `firebase-hosting-merge.yml` handles automatic deployments on merge to the main branch.
+- `firebase-hosting-pull-request.yml` previews deployments for pull requests.
+
+### Customize Configuration
+
+See [Configuration Reference](https://cli.vuejs.org/config/).
